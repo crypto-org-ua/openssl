@@ -58,7 +58,7 @@ $	    tests := -
 	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
 	test_ss,test_ca,test_engine,test_evp,test_evp_extra,test_ssl,test_tsa,-
 	test_ige,test_jpake,test_srp,test_cms,test_v3name,test_ocsp,-
-	test_gost2814789,test_heartbeat,test_p5_crpt2,-
+	test_gost2814789,test_heartbeat,test_dstu,test_p5_crpt2,-
 	test_constant_time
 $	endif
 $	tests = f$edit(tests,"COLLAPSE")
@@ -93,6 +93,7 @@ $	SSLTEST :=		ssltest
 $	RSATEST :=		rsa_test
 $	ENGINETEST :=		enginetest
 $	GOST2814789TEST :=	gost2814789test
+$	DSTUTEST :=	dstutest
 $	EVPTEST :=		evp_test
 $	EVPEXTRATEST :=		evp_extra_test
 $	P5_CRPT2_TEST :=	p5_crpt2_test
@@ -174,6 +175,10 @@ $	return
 $ test_gost2814789:
 $	define/user OPENSSL_ENGINES 'engines_dir'
 $	mcr 'texe_dir''gost2814789test'
+$	return
+$ test_dstu:
+$	define/user OPENSSL_ENGINES 'engines_dir'
+$	mcr 'texe_dir''dstutest'
 $	return
 $ test_enc:
 $	@testenc.com 'pointer_size'

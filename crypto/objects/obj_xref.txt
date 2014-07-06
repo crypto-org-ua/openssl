@@ -58,3 +58,6 @@ dhSinglePass_cofactorDH_sha224kdf_scheme	sha224	dh_cofactor_kdf
 dhSinglePass_cofactorDH_sha256kdf_scheme	sha256	dh_cofactor_kdf
 dhSinglePass_cofactorDH_sha384kdf_scheme	sha384	dh_cofactor_kdf
 dhSinglePass_cofactorDH_sha512kdf_scheme	sha512	dh_cofactor_kdf
+
+dstu4145le dstu34311 dstu4145le
+dstu4145be dstu34311 dstu4145be

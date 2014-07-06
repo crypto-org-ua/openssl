@@ -145,7 +145,7 @@ $ TEST_FILES = "BNTEST,ECTEST,ECDSATEST,ECDHTEST,IDEATEST,"+ -
 	       "DESTEST,SHA1TEST,SHA256T,SHA512T,"+ -
 	       "MDC2TEST,RMDTEST,"+ -
 	       "RANDTEST,DHTEST,ENGINETEST,"+ -
-	       "GOST2814789TEST,"+ -
+	       "GOST2814789TEST,DSTUTEST"+ -
 	       "BFTEST,CASTTEST,SSLTEST,"+ -
 	       "EXPTEST,DSATEST,RSA_TEST,"+ -
 	       "EVP_TEST,EVP_EXTRA_TEST,IGETEST,"+ -
@@ -179,6 +179,7 @@ $ T_D_RANDTEST           := [-.crypto.rand]
 $ T_D_DHTEST             := [-.crypto.dh]
 $ T_D_ENGINETEST         := [-.crypto.engine]
 $ T_D_GOST2814789TEST    := [-.engines.ccgost]
+$ T_D_DSTUTEST           := [-.engines.uadstu]
 $ T_D_BFTEST             := [-.crypto.bf]
 $ T_D_CASTTEST           := [-.crypto.cast]
 $ T_D_SSLTEST            := [-.ssl]
