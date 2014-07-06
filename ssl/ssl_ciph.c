@@ -168,7 +168,8 @@
 #define SSL_ENC_AES256CCM_IDX   15
 #define SSL_ENC_AES128CCM8_IDX  16
 #define SSL_ENC_AES256CCM8_IDX  17
-#define SSL_ENC_NUM_IDX         18
+#define SSL_ENC_DSTU_IDX	    18
+#define SSL_ENC_NUM_IDX         19
 
 /* NB: make sure indices in these tables match values above */
 
@@ -196,12 +197,13 @@ static const ssl_cipher_table ssl_cipher_table_cipher[SSL_ENC_NUM_IDX] = {
     {SSL_AES128CCM, NID_aes_128_ccm}, /* SSL_ENC_AES128CCM_IDX 14 */
     {SSL_AES256CCM, NID_aes_256_ccm}, /* SSL_ENC_AES256CCM_IDX 15 */
     {SSL_AES128CCM8, NID_aes_128_ccm}, /* SSL_ENC_AES128CCM8_IDX 16 */
-    {SSL_AES256CCM8, NID_aes_256_ccm} /* SSL_ENC_AES256CCM8_IDX 17 */
+    {SSL_AES256CCM8, NID_aes_256_ccm}, /* SSL_ENC_AES256CCM8_IDX 17 */
+    {SSL_eDSTU, NID_dstu28147_cfb} /* SSL_ENC_DSTU_IDX 18 */
 };
 
 static const EVP_CIPHER *ssl_cipher_methods[SSL_ENC_NUM_IDX] = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL
+    NULL, NULL, NULL
 };
 
 #define SSL_COMP_NULL_IDX       0
@@ -216,6 +218,7 @@ static STACK_OF(SSL_COMP) *ssl_comp_methods = NULL;
 #define SSL_MD_GOST89MAC_IDX 3
 #define SSL_MD_SHA256_IDX 4
 #define SSL_MD_SHA384_IDX 5
+#define SSL_MD_DSTU_IDX 6
 /*
  * Constant SSL_MAX_DIGEST equal to size of digests array should be defined
  * in the ssl_locl.h
@@ -230,11 +233,12 @@ static const ssl_cipher_table ssl_cipher_table_mac[SSL_MD_NUM_IDX] = {
     {SSL_GOST94, NID_id_GostR3411_94}, /* SSL_MD_GOST94_IDX 2 */
     {SSL_GOST89MAC, NID_id_Gost28147_89_MAC}, /* SSL_MD_GOST89MAC_IDX 3 */
     {SSL_SHA256, NID_sha256},   /* SSL_MD_SHA256_IDX 4 */
-    {SSL_SHA384, NID_sha384}    /* SSL_MD_SHA384_IDX 5 */
+    {SSL_SHA384, NID_sha384},    /* SSL_MD_SHA384_IDX 5 */
+    {SSL_DSTU95, NID_dstu34311}    /* SSL_MD_DSTU_IDX 6 */
 };
 
 static const EVP_MD *ssl_digest_methods[SSL_MD_NUM_IDX] = {
-    NULL, NULL, NULL, NULL, NULL, NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
 /* Utility function for table lookup */
@@ -259,17 +263,17 @@ static int ssl_cipher_info_find(const ssl_cipher_table * table,
  */
 static int ssl_mac_pkey_id[SSL_MD_NUM_IDX] = {
     EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC, NID_undef,
-    EVP_PKEY_HMAC, EVP_PKEY_HMAC
+    EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC
 };
 
 static int ssl_mac_secret_size[SSL_MD_NUM_IDX] = {
-    0, 0, 0, 0, 0, 0
+    0, 0, 0, 0, 0, 0, 0
 };
 
 static const int ssl_handshake_digest_flag[SSL_MD_NUM_IDX] = {
     SSL_HANDSHAKE_MAC_MD5, SSL_HANDSHAKE_MAC_SHA,
     SSL_HANDSHAKE_MAC_GOST94, 0, SSL_HANDSHAKE_MAC_SHA256,
-    SSL_HANDSHAKE_MAC_SHA384
+    SSL_HANDSHAKE_MAC_SHA384, SSL_HANDSHAKE_MAC_DSTU
 };
 
 #define CIPHER_ADD      1
@@ -342,6 +346,7 @@ static const SSL_CIPHER cipher_aliases[] = {
     {0, SSL_TXT_aGOST01, 0, 0, SSL_aGOST01, 0, 0, 0, 0, 0, 0, 0},
     {0, SSL_TXT_aGOST, 0, 0, SSL_aGOST01, 0, 0, 0, 0, 0, 0, 0},
     {0, SSL_TXT_aSRP, 0, 0, SSL_aSRP, 0, 0, 0, 0, 0, 0, 0},
+    {0, SSL_TXT_aDSTU, 0, 0, SSL_aDSTU, 0, 0, 0, 0, 0, 0, 0},
 
     /* aliases combining key exchange and server authentication */
     {0, SSL_TXT_EDH, 0, SSL_kDHE, ~SSL_aNULL, 0, 0, 0, 0, 0, 0, 0},
@@ -387,6 +392,7 @@ static const SSL_CIPHER cipher_aliases[] = {
     {0, SSL_TXT_GOST89MAC, 0, 0, 0, 0, SSL_GOST89MAC, 0, 0, 0, 0, 0},
     {0, SSL_TXT_SHA256, 0, 0, 0, 0, SSL_SHA256, 0, 0, 0, 0, 0},
     {0, SSL_TXT_SHA384, 0, 0, 0, 0, SSL_SHA384, 0, 0, 0, 0, 0},
+    {0, SSL_TXT_DSTU95, 0, 0, 0, 0, SSL_DSTU95, 0, 0, 0, 0, 0},
 
     /* protocol version aliases */
     {0, SSL_TXT_SSLV3, 0, 0, 0, 0, 0, SSL_SSLV3, 0, 0, 0, 0},
@@ -1981,6 +1987,8 @@ int ssl_cipher_get_cert_index(const SSL_CIPHER *c)
         return SSL_PKEY_RSA_ENC;
     else if (alg_a & SSL_aGOST01)
         return SSL_PKEY_GOST01;
+    else if (alg_a & SSL_aDSTU)
+        return SSL_PKEY_DSTU;
     return -1;
 }
 

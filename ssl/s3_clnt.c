@@ -1871,6 +1871,10 @@ int ssl3_get_key_exchange(SSL *s)
         else if (alg_a & SSL_aECDSA)
             pkey = X509_get_pubkey(s->session->peer);
 # endif
+# ifndef OPENSSL_NO_DSTU
+		else if (alg_a & SSL_aDSTU)
+			pkey = X509_get_pubkey(s->session->peer);
+# endif
         /* else anonymous ECDH, so no certificate or pkey. */
         EC_KEY_set_public_key(ecdh, srvr_ecpoint);
         s->s3->peer_ecdh_tmp = ecdh;

@@ -943,6 +943,12 @@ static int tls1_check_cert_param(SSL *s, X509 *x, int set_ee_md)
 # define tlsext_sigalg_ecdsa(md) md, TLSEXT_signature_ecdsa,
 #endif
 
+#ifdef OPENSSL_NO_DSTU
+# define tlsext_sigalg_dstu(md) /* */
+#else
+# define tlsext_sigalg_dstu(md) md, TLSEXT_signature_dstu,
+#endif
+
 #define tlsext_sigalg(md) \
                 tlsext_sigalg_rsa(md) \
                 tlsext_sigalg_dsa(md) \
@@ -954,6 +960,7 @@ static const unsigned char tls12_sigalgs[] = {
         tlsext_sigalg(TLSEXT_hash_sha256)
         tlsext_sigalg(TLSEXT_hash_sha224)
         tlsext_sigalg(TLSEXT_hash_sha1)
+        tlsext_sigalg_dstu(TLSEXT_hash_dstu)
 };
 
 #ifndef OPENSSL_NO_EC
@@ -3171,13 +3178,15 @@ static const tls12_lookup tls12_md[] = {
     {NID_sha224, TLSEXT_hash_sha224},
     {NID_sha256, TLSEXT_hash_sha256},
     {NID_sha384, TLSEXT_hash_sha384},
-    {NID_sha512, TLSEXT_hash_sha512}
+    {NID_sha512, TLSEXT_hash_sha512},
+    {NID_dstu34311, TLSEXT_hash_dstu}
 };
 
 static const tls12_lookup tls12_sig[] = {
     {EVP_PKEY_RSA, TLSEXT_signature_rsa},
     {EVP_PKEY_DSA, TLSEXT_signature_dsa},
-    {EVP_PKEY_EC, TLSEXT_signature_ecdsa}
+    {EVP_PKEY_EC, TLSEXT_signature_ecdsa},
+    {NID_dstu4145le, TLSEXT_signature_dstu}
 };
 
 static int tls12_find_id(int nid, const tls12_lookup *table, size_t tlen)
@@ -3228,6 +3237,10 @@ typedef struct {
     const EVP_MD *(*mfunc) (void);
 } tls12_hash_info;
 
+static const EVP_MD* dstu_md(void) {
+	return EVP_get_digestbynid(NID_dstu34311);
+}
+
 static const tls12_hash_info tls12_md_info[] = {
 #ifdef OPENSSL_NO_MD5
     {NID_md5, 64, 0},
@@ -3238,7 +3251,8 @@ static const tls12_hash_info tls12_md_info[] = {
     {NID_sha224, 112, EVP_sha224},
     {NID_sha256, 128, EVP_sha256},
     {NID_sha384, 192, EVP_sha384},
-    {NID_sha512, 256, EVP_sha512}
+    {NID_sha512, 256, EVP_sha512},
+    {NID_dstu34311, 256, dstu_md}
 };
 
 static const tls12_hash_info *tls12_get_hash_info(unsigned char hash_alg)
@@ -3275,6 +3289,10 @@ static int tls12_get_pkey_idx(unsigned char sig_alg)
 #ifndef OPENSSL_NO_EC
     case TLSEXT_signature_ecdsa:
         return SSL_PKEY_ECC;
+#endif
+#ifndef OPENSSL_NO_DSTU
+    case TLSEXT_signature_dstu:
+        return SSL_PKEY_DSTU;
 #endif
     }
     return -1;

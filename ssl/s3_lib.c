@@ -3770,6 +3770,21 @@ OPENSSL_GLOBAL const SSL_CIPHER ssl3_ciphers[] = {
      256,
      },
 
+    {
+     1,
+     "ECDHE-DSTU-GOST89-GOST95",
+     0x300FF45,
+     SSL_kEECDH,
+     SSL_aDSTU,
+     SSL_eDSTU,
+     SSL_DSTU95,
+     SSL_TLSV1_2,
+     SSL_NOT_EXP|SSL_HIGH,
+     SSL_HANDSHAKE_MAC_DSTU|TLS1_PRF_DSTU,
+     256,
+     256
+     },
+
 /* end of list */
 };
 
