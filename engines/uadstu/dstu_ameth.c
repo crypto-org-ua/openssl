@@ -7,6 +7,7 @@
 #include "dstu_key.h"
 #include "dstu_params.h"
 #include <openssl/x509.h>
+#include <openssl/bn.h>
 #ifndef OPENSSL_NO_CMS
 # include <openssl/cms.h>
 #endif
@@ -348,7 +349,7 @@ static int dstu_asn1_pkey_size(const EVP_PKEY *pk)
     return res;
 }
 
-void dstu_asn1_pkey_free(EVP_PKEY *pkey)
+static void dstu_asn1_pkey_free(EVP_PKEY *pkey)
 {
     DSTU_KEY *key = EVP_PKEY_get0(pkey);
 

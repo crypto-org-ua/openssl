@@ -6,6 +6,7 @@
 #include "dstu_compress.h"
 #include "dstu_params.h"
 #include <string.h>
+#include <openssl/bn.h>
 
 static int bn_trace(const BIGNUM *bn, const BIGNUM *p, BN_CTX *ctx)
 {

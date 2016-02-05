@@ -7,6 +7,7 @@
 #include "dstu_key.h"
 #include "dstu_params.h"
 #include <openssl/asn1.h>
+#include <openssl/bn.h>
 
 #include "e_dstu_err.h"
 
@@ -204,7 +205,8 @@ static int dstu_pkey_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
     EVP_PKEY *pkey = EVP_PKEY_CTX_get0_pkey(ctx);
     DSTU_KEY *key = NULL;
     const EC_GROUP *group = NULL;
-    int field_size, ret = 0, encoded_sig_size;
+    int field_size, ret = 0;
+    size_t encoded_sig_size;
     ASN1_OCTET_STRING *dstu_sig = NULL;
     unsigned char *sig_data = NULL;
     BIGNUM *n = NULL;
@@ -234,7 +236,7 @@ static int dstu_pkey_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
         goto err;
 
     field_size = BN_num_bytes(n);
-    encoded_sig_size = EVP_PKEY_size(pkey);
+    encoded_sig_size = (size_t)EVP_PKEY_size(pkey);
 
     if (encoded_sig_size > *siglen) {
         *siglen = encoded_sig_size;
@@ -333,7 +335,7 @@ static int dstu_pkey_verify(EVP_PKEY_CTX *ctx, const unsigned char *sig,
     if (siglen & 0x01)
         goto err;
 
-    if (siglen < (2 * field_size))
+    if (siglen < (2 * (size_t)field_size))
         goto err;
 
     if (NID_dstu4145le == EVP_PKEY_id(pkey)) {

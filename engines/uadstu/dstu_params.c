@@ -5,6 +5,7 @@
 
 #include "dstu_params.h"
 #include <openssl/evp.h>
+#include <openssl/bn.h>
 #include <string.h>
 
 static unsigned char data163[] = {
@@ -331,12 +332,12 @@ int curve_nid_from_group(const EC_GROUP *group)
     int m = EC_GROUP_get_degree(group), i, nid = NID_undef;
     EC_GROUP *std_group = NULL;
 
-    for (i = 0; i < (sizeof(dstu_curves) / sizeof(DSTU_NAMED_CURVE)); i++) {
+    for (i = 0; i < (int)(sizeof(dstu_curves) / sizeof(DSTU_NAMED_CURVE)); i++) {
         if (m == dstu_curves[i].poly[0])
             break;
     }
 
-    if (i < (sizeof(dstu_curves) / sizeof(DSTU_NAMED_CURVE))) {
+    if (i < (int)(sizeof(dstu_curves) / sizeof(DSTU_NAMED_CURVE))) {
         std_group = group_from_named_curve(i);
 
         if (std_group) {
@@ -536,7 +537,7 @@ EC_GROUP *group_from_nid(int nid)
 {
     int i;
 
-    for (i = 0; i < (sizeof(dstu_curves) / sizeof(DSTU_NAMED_CURVE)); i++) {
+    for (i = 0; i < (int)(sizeof(dstu_curves) / sizeof(DSTU_NAMED_CURVE)); i++) {
         if (nid == dstu_curves[i].nid)
             return group_from_named_curve(i);
     }
