@@ -3,6 +3,7 @@
  * This file is distributed under the same license as OpenSSL
  ==================================================================== */
 
+#define _XOPEN_SOURCE
 #include <stdio.h>
 
 #if defined(OPENSSL_NO_ENGINE) || defined(OPENSSL_NO_DSTU)
@@ -196,7 +197,7 @@ static ENGINE *load_dstu(void)
         return 0;
 
 # ifndef OPENSSL_NO_DYNAMIC_ENGINE
-    setenv("OPENSSL_ENGINES", UADSTU_DIR, 1);
+    putenv("OPENSSL_ENGINES="UADSTU_DIR);
 # endif
     ERR_load_crypto_strings();
     ENGINE_load_builtin_engines();
