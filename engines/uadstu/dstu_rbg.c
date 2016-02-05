@@ -7,6 +7,7 @@
 #include "dstu_params.h"
 #include "../ccgost/gost89.h"
 #include <time.h>
+#include <openssl/rand.h>
 
 static u4 I[2];
 static u4 s[2];
@@ -97,7 +98,7 @@ static int dstu_rbg_status(void)
 
 static int dstu_rbg_bytes(unsigned char *buf, int num)
 {
-    u4 i;
+    int i;
     byte j;
     int rv = 1;
 

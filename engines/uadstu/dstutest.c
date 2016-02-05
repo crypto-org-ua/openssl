@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 # include <openssl/evp.h>
 # include <openssl/hmac.h>
 # include <openssl/obj_mac.h>
+# include <openssl/rand.h>
 
 # include "../engines/uadstu/dstu_params.h"
 

@@ -8,6 +8,7 @@
 #include "dstu_compress.h"
 #include "dstu_params.h"
 #include <openssl/objects.h>
+#include <openssl/bn.h>
 #include <string.h>
 
 DSTU_KEY *DSTU_KEY_new(void)
